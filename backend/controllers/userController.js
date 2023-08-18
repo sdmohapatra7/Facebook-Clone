@@ -14,9 +14,45 @@ module.exports.createUser = async (req, res) => {
             user,
         });
     } catch (error) {
-        return res.json(500).json({
+        return res.status(500).json({
             message:'Internal Server error',
             error
         });
     }
 };
+
+module.exports.loginUser = async(req,res)=>{
+    try {
+        const {email,password,confirmPassword} = req.body;
+        if(!email || !password){
+            return res.status(400).json({
+                message:'Please Enter Email And password'
+            });
+        }
+        if(confirmPassword !== password){
+            return res.status(400).json({
+                message:'Invalid Username Password'
+            });
+        }
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(400).json({
+                message:'User Not found Please SignUp'
+            });
+        }
+        const isMatchPassword = await user.comparePassword(password);
+        if(!isMatchPassword){
+            return res.status(400).json({
+                message:'Invalid Username Password'
+            });
+        }
+        return res.status(200).json({
+            message:'Now You Assess What you need',
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message:'Internal Server error',
+            error
+        });
+    }
+}
