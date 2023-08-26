@@ -4,10 +4,11 @@ const jwt = require('jsonwebtoken');
 module.exports.createUser = async (req, res) => {
     try {
         const existUser = await User.findOne({email:req.body.email});
-        if (existUser) {
+
+        if (existUser && existUser.userName !== req.body.userName) {
             return res.status(400).json({
                 success:false,
-                message: 'User Already Exist On this Mail'
+                message: 'User Already Exist On this Mail || username'
             });
         }
         const user = await User.create(req.body);
